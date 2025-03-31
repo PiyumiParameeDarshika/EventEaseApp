@@ -1,0 +1,49 @@
+﻿@page "/"
+@using EventEaseApp.Models
+@using EventEaseApp.Components
+@inject EventEaseApp.Services.UserSessionService UserSession
+
+<h3>Event List</h3>
+
+<div>
+    @foreach (var eventItem in PagedEvents)
+    {
+        <EventCard EventName="@eventItem.Name"
+                   EventDate="@eventItem.Date"
+                   EventLocation="@eventItem.Location" />
+    }
+</div>
+
+<button @onclick="PreviousPage" disabled="@IsFirstPage">Previous</button>
+<button @onclick="NextPage" disabled="@IsLastPage">Next</button>
+
+<h3>Attended Events</h3>
+<ul>
+    @foreach (var eventName in UserSession.GetRegisteredEvents())
+    {
+        <li>@eventName</li>
+    }
+</ul>
+
+@code {
+    private List<Event> events = new List<Event>
+    {
+        new Event { Name = "Annual Tech Conference", Date = DateTime.Now.AddDays(10), Location = "Colombo" },
+        new Event { Name = "Music Gala", Date = DateTime.Now.AddDays(20), Location = "Kandy" },
+        new Event { Name = "Startup Meetup", Date = DateTime.Now.AddDays(30), Location = "Galle" },
+        new Event { Name = "Art Festival", Date = DateTime.Now.AddDays(40), Location = "Jaffna" }
+    };
+
+    private int currentPage = 1;
+    private int pageSize = 2;
+
+    private IEnumerable<Event> PagedEvents => events
+        .Skip((currentPage - 1) * pageSize)
+        .Take(pageSize);
+
+    private bool IsFirstPage => currentPage == 1;
+    private bool IsLastPage => currentPage >= (events.Count + pageSize - 1) / pageSize;
+
+    private void NextPage() => currentPage++;
+    private void PreviousPage() => currentPage--;
+}

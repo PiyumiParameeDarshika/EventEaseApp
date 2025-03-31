@@ -1,0 +1,43 @@
+﻿@using System.ComponentModel.DataAnnotations
+@inject NavigationManager Navigation
+
+<h3>Event Registration</h3>
+<EditForm Model="registration" OnValidSubmit="SubmitForm">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div>
+        <label>Name:</label>
+        <input type="text" @bind="registration.Name" />
+        <span style="color:red;" v-if="string.IsNullOrWhiteSpace(registration.Name)">Name is required.</span>
+    </div>
+    <div>
+        <label>Email:</label>
+        <input type="email" @bind="registration.Email" />
+        @if (!new EmailAddressAttribute().IsValid(registration.Email))
+        {
+            <p style="color:red;">Invalid email address.</p>
+        }
+    </div>
+    <button type="submit">Register</button>
+</EditForm>
+
+@code {
+    private RegistrationFormModel registration = new RegistrationFormModel();
+
+    private void SubmitForm()
+    {
+        // Placeholder for saving registration data
+        Navigation.NavigateTo("/");
+    }
+
+    public class RegistrationFormModel
+    {
+        [Required]
+        public string Name { get; set; }
+
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; }
+    }
+}

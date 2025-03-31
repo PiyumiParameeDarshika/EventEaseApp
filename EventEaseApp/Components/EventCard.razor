@@ -1,0 +1,50 @@
+﻿@using EventEaseApp.Services
+
+<div class="event-card">
+    <h4>@EventName</h4>
+    <p>Date: @EventDate.ToString("MMMM dd, yyyy")</p>
+    <p>Location: @EventLocation</p>
+
+    <!-- Input Field for Event Name with Validation -->
+    <input type="text" @bind="EventName" placeholder="Update Event Name" />
+    @if (string.IsNullOrWhiteSpace(EventName))
+    {
+        <p style="color:red;">Event name is required.</p>
+    }
+
+    <!-- Input Field for Event Date with Validation -->
+    <input type="date" @bind="EventDate" />
+    @if (EventDate == default(DateTime))
+    {
+        <p style="color:red;">Please enter a valid date.</p>
+    }
+
+    <!-- Attendance Tracker -->
+    <button @onclick="MarkAsAttending">Mark as Attending</button>
+    @if (isAttending)
+    {
+        <p style="color:green;">You are attending this event!</p>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public string EventName { get; set; }
+
+    [Parameter]
+    public DateTime EventDate { get; set; }
+
+    [Parameter]
+    public string EventLocation { get; set; }
+
+    [Inject]
+    private UserSessionService UserSession { get; set; }
+
+    private bool isAttending = false;
+
+    private void MarkAsAttending()
+    {
+        isAttending = true;
+        UserSession.RegisterEvent(EventName);
+    }
+}
